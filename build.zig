@@ -8,6 +8,6 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    const exe = b.addExecutable(.{ .name = "bench", .root_module = mod });
+    const exe = b.addExecutable(.{ .name = "gemma", .root_module = mod });
     b.installArtifact(exe);
 }
