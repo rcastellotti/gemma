@@ -16,7 +16,6 @@ const help =
     \\  --output <FILE>  write results as CSV to FILE
     \\  --case <NAME>    run only the named test case
     \\  --kernel <NAME>  run only the named kernel
-    \\  --once           time a single call instead of sampling
     \\
 ;
 

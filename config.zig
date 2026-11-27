@@ -1,7 +1,3 @@
-pub const samples = 9;
-pub const target_ns = 50_000_000;
-pub const max_iterations = 1 << 20;
-
 pub const Case = struct {
     name: []const u8,
     m: usize,

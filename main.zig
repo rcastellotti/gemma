@@ -25,7 +25,7 @@ pub fn main(init: std.process.Init) void {
 }
 
 fn exitWithError(stderr: *Io.Writer, err: anyerror) noreturn {
-    if (err != error.InvalidArgument and err != error.IncorrectResult and err != error.NoKernels) {
+    if (err != error.InvalidArgument and err != error.NoKernels) {
         stderr.print("bench: {s}\n", .{@errorName(err)}) catch {};
     }
     std.process.exit(1);
