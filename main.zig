@@ -40,9 +40,5 @@ fn parseArgs(args: []const [:0]const u8, stderr: *Io.Writer) !Command {
         try stderr.print("unknown command: {s}\n", .{name});
         return error.InvalidArgument;
     };
-    if (args.len > 1) {
-        try stderr.print("{s} does not accept arguments\n", .{name});
-        return error.InvalidArgument;
-    }
     return command;
 }
