@@ -7,4 +7,6 @@ pub fn execute(writer: *Io.Writer) !void {
     for (config.cases) |tc| {
         try writer.print("  {s}: {d} x {d} x {d}\n", .{ tc.name, tc.m, tc.n, tc.k });
     }
+    try writer.writeAll("kernels:\n");
+    for (config.kernels) |kernel| try writer.print("  {s}\n", .{kernel.name});
 }

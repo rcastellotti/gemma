@@ -5,10 +5,18 @@ const help =
     \\GEMMA3 benchmark - by rcastellotti.dev
     \\usage: bench
     \\       bench <help|list>
+    \\       bench run [OPTIONS]
     \\
     \\commands:
     \\  help             show this help
-    \\  list             list test cases
+    \\  list             list test cases and kernels
+    \\  run              run the benchmark
+    \\
+    \\run options:
+    \\  --output <FILE>  write results as CSV to FILE
+    \\  --case <NAME>    run only the named test case
+    \\  --kernel <NAME>  run only the named kernel
+    \\  --once           time a single call instead of sampling
     \\
 ;
 

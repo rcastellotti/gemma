@@ -7,7 +7,9 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("main.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
+    mod.addCSourceFile(.{ .file = b.path("kernels/ijk.c"), .flags = &.{"-std=c11"} });
     const exe = b.addExecutable(.{ .name = "bench", .root_module = mod });
     b.installArtifact(exe);
 }
