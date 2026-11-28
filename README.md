@@ -130,7 +130,7 @@ mean = sum(times) / len(times) # 16.14 ms
 
 once we put everything together, the final benchmarking methodology looks something like this:
 
-````c
+```c
 #define TARGET_TIME 0.05
 #define MAX_ITERS ((size_t)1 << 20)
 #define SAMPLES 9
@@ -169,11 +169,12 @@ static double benchmark(gemm_fn fn,
   // 4. sort and return the median
   qsort(samples, SAMPLES, sizeof(double), compare_double);
   return samples[SAMPLES / 2];
-}```
+}
+```
 
 finally, we can compute the execution time in milliseconds and the throughput in GFLOP/s:
 
-``` double seconds = benchmark(fn, M, N, K, A, B, C);
+````double seconds = benchmark(fn, M, N, K, A, B, C);
 
 double ms = seconds * 1e3; double gflops = (2.0 * M * N * K) / (seconds * 1e9); ```
 
