@@ -93,7 +93,7 @@ simply unfeasible to run the benchmark 10 thousand times. There simply is not a 
 case, so we introduce a _calibration_ loop, in which we increase the count exponentially until we reach a suitable
 iteration number:
 
-````c
+```c
 #define TARGET_TIME 0.05
 #define MAX_ITERS ((size_t)1 << 20)
 
@@ -134,7 +134,7 @@ You can conclude the section with the following, keeping the same informal style
 
 once we put everything together, the final benchmarking methodology looks something like this:
 
-``` #define TARGET_TIME 0.05 #define MAX_ITERS ((size_t)1 << 20) #define SAMPLES 9
+````#define TARGET_TIME 0.05 #define MAX_ITERS ((size_t)1 << 20) #define SAMPLES 9
 
 static double run_batch( gemm_fn fn, size_t M, size_t N, size_t K, const float *A, const float *B, float *C, size_t
 iterations ) { uint64_t start = now_ns();
