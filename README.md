@@ -53,18 +53,30 @@ floating point operations while the CPU is simply waiting for them, bad bad!!!
 
 adopting a monotonic (always increasing) wall-clock fixes every problem above:
 
-````c #include <stdint.h> #include <time.h> static inline uint64_t now_ns(void) { struct timespec ts;
-clock_gettime(CLOCK_MONOTONIC, &ts); return (uint64_t)ts.tv_sec * 1000000000ULL + (uint64_t)ts.tv_nsec; } ```
+```c
+#include <stdint.h>
+#include <time.h>
+
+static inline uint64_t now_ns(void) {
+  struct timespec ts;
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  return (uint64_t)ts.tv_sec * 1000000000ULL + (uint64_t)ts.tv_nsec;
+}
+```
 
 then:
 
-```c uint64_t start = now_ns(); gemm(...); uint64_t elapsed = now_ns() - start; ```
+```c
+uint64_t start = now_ns();
+gemm(...);
+uint64_t elapsed = now_ns() - start;
+```
 
 ok, so, good to go? not quite, when running the 16x16x16 case it takes approximately 1.4 microseconds, reading the clock
 itself costs some CPU cycles and it can easily be a non-negligible percentage of the measurement, thus it seems
 reasonable to time many calls in batch and then compute the average execution time, a first improvement would be:
 
-```c #define ITERATIONS 10000 start = now_ns(); for (i = 0; i < ITERATIONS; i++) gemm_kernel(...); end = now_ns();
+````c #define ITERATIONS 10000 start = now_ns(); for (i = 0; i < ITERATIONS; i++) gemm_kernel(...); end = now_ns();
 time_per_call = (end - start) / ITERATIONS; ```
 
 now the execution time is ~14ms and clock-reading error is negligible, however as we scale the dimension of inputs it is
