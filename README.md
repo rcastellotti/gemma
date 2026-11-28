@@ -51,7 +51,9 @@ resolution, you guessed it, that too is bad.
 the moment we offload computation to a GPU or DSP we are totally lost, the accelerators might be computing bilions of
 floating point operations while the CPU is simply waiting for them, bad bad!!!
 
-adopting a monotonic (always increasing) wall-clock fixes every problem above:
+## la cura (battiato)
+
+adopting a monotonic (strictly non-decrasing) wall-clock fixes every problem above:
 
 ```c
 #include <stdint.h>
@@ -72,22 +74,37 @@ gemm(...);
 uint64_t elapsed = now_ns() - start;
 ```
 
-ok, so, good to go? not quite, when running the 16x16x16 case it takes approximately 1.4 microseconds, reading the clock
+ok, so, good to go? not quite, when running the 16x16x16 case execution takes approximately 1.4 microseconds, reading the clock
 itself costs some CPU cycles and it can easily be a non-negligible percentage of the measurement, thus it seems
 reasonable to time many calls in batch and then compute the average execution time, a first improvement would be:
 
-````c #define ITERATIONS 10000 start = now_ns(); for (i = 0; i < ITERATIONS; i++) gemm_kernel(...); end = now_ns();
-time_per_call = (end - start) / ITERATIONS; ```
+```c
+#define ITERATIONS 10000
+start = now_ns();
+for (i = 0; i < ITERATIONS; i++) {
+  gemm_kernel(...);
+}
+end = now_ns();
+time_per_call = (end - start) / ITERATIONS;
+```
 
 now the execution time is ~14ms and clock-reading error is negligible, however as we scale the dimension of inputs it is
 simply unfeasible to run the benchmark 10 thousand times. There simply is not a single call count working for every test
 case, so we introduce a _calibration_ loop, in which we increase the count exponentially until we reach a suitable
 iteration number:
 
-```c #define TARGET_TIME 0.05 #define MAX_ITERS ((size_t)1 << 20)
+````c
+#define TARGET_TIME 0.05
+#define MAX_ITERS ((size_t)1 << 20)
 
-while (1) { double elapsed = run_batch(fn, M, N, K, A, B, C, iterations); if (elapsed >= TARGET_TIME || iterations >=
-MAX_ITERS) { break; } iterations *= 2; } ```
+while (1) {
+  double elapsed = run_batch(fn, M, N, K, A, B, C, iterations);
+  if (elapsed >= TARGET_TIME || iterations >=MAX_ITERS) {
+    break;
+  }
+iterations *= 2;
+}
+```
 
 `TARGET_TIME` is a constant we can tweak but 0.05 seems reasonable, we add an upper boundary just for good measure, once
 we determine the iterations we can use it as we did before.
@@ -103,11 +120,13 @@ we can mitigate those by simply running a benchmark, for example, 9 times and co
 actually mean the median, not the average, to make our measurements more resistant to unfortunate sheduling events and
 other outliers, sort and pick the median, that's it.
 
-```python # perdoname por mi python loquito times = [10.2, 10.1, 10.3, 48.7, 10.0, 10.2, 10.1, 25.4, 10.3]
-
+```python3
+#perdoname por mi python loquito
+times = [10.2, 10.1, 10.3, 48.7, 10.0, 10.2, 10.1, 25.4, 10.3]
 times.sort() # [10.0, 10.1, 10.1, 10.2, 10.2, 10.3, 10.3, 25.4, 48.7]
-
-median = times[len(times) // 2] # 10.20 ms mean = sum(times) / len(times) # 16.14 ms ```
+median = times[len(times) // 2] # 10.20ms
+mean = sum(times) / len(times) # 16.14 ms
+```
 
 GIPPITY SLOP, am tired
 
